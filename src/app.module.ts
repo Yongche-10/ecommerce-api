@@ -22,7 +22,7 @@ import { WishlistModule }   from './wishlist/wishlist.module';
 @Module({
   imports: [
     // ── Database connection ───────────────────────────────
-    TypeOrmModule.forRoot({
+    /*TypeOrmModule.forRoot({
       type:             'mysql',
       host:             'localhost',
       port:             3306,
@@ -32,6 +32,19 @@ import { WishlistModule }   from './wishlist/wishlist.module';
       entities:         [User, Category, Product, Cart, Wishlist, Order, OrderItem],
       synchronize:      false,
       connectorPackage: 'mysql2',
+    }),
+    */
+   
+  // railway connection
+    TypeOrmModule.forRoot({
+      type:        'mysql',
+      host:        process.env.MYSQLHOST,
+      port:        parseInt(process.env.MYSQLPORT || '3306'),
+      username:    process.env.MYSQLUSER,
+      password:    process.env.MYSQLPASSWORD,
+      database:    process.env.MYSQLDATABASE,
+      entities:    [User, Category, Product, Cart, Wishlist, Order, OrderItem],
+      synchronize: false,
     }),
 
     // ── Feature modules ───────────────────────────────────
