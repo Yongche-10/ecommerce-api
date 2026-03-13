@@ -21,33 +21,19 @@ import { WishlistModule }   from './wishlist/wishlist.module';
 
 @Module({
   imports: [
-    // ── Database connection ───────────────────────────────
-    /*TypeOrmModule.forRoot({
-      type:             'mysql',
-      host:             'localhost',
-      port:             3306,
-      username:         'root',
-      password:         'sql4207',
-      database:         'ecommerce_db',
-      entities:         [User, Category, Product, Cart, Wishlist, Order, OrderItem],
-      synchronize:      false,
-      connectorPackage: 'mysql2',
-    }),
-    */
-   
-  // railway connection
+    // Uses environment variables on Railway.
+    // Falls back to local values when running on your PC.
     TypeOrmModule.forRoot({
       type:        'mysql',
-      host:        process.env.MYSQLHOST,
+      host:        process.env.MYSQLHOST     || '127.0.0.1',
       port:        parseInt(process.env.MYSQLPORT || '3306'),
-      username:    process.env.MYSQLUSER,
-      password:    process.env.MYSQLPASSWORD,
-      database:    process.env.MYSQLDATABASE,
+      username:    process.env.MYSQLUSER     || 'root',
+      password:    process.env.MYSQLPASSWORD || 'sql4207',
+      database:    process.env.MYSQLDATABASE || 'ecommerce_db',
       entities:    [User, Category, Product, Cart, Wishlist, Order, OrderItem],
       synchronize: false,
     }),
 
-    // ── Feature modules ───────────────────────────────────
     UsersModule,
     AuthModule,
     CategoriesModule,
