@@ -18,6 +18,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule }   from './products/products.module';
 import { CartModule }       from './cart/cart.module';
 import { WishlistModule }   from './wishlist/wishlist.module';
+import { OrdersModule }     from './orders/orders.module';
 
 @Module({
   imports: [
@@ -34,12 +35,14 @@ import { WishlistModule }   from './wishlist/wishlist.module';
       synchronize: false,
     }),
 
+    // Feature modules
     UsersModule,
     AuthModule,
     CategoriesModule,
     ProductsModule,
     CartModule,
     WishlistModule,
+    OrdersModule,
   ],
 })
 export class AppModule {}

@@ -36,4 +36,11 @@ export class UsersService {
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
+
+  // GET /users — returns all users (used by admin dashboard for customer count)
+  findAll() {
+    return this.userRepository.find({
+      select: ['user_id', 'full_name', 'email', 'role', 'created_at'],
+    });
+  }
 }

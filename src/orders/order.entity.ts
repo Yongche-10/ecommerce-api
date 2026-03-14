@@ -13,7 +13,7 @@ export class Order {
 
   @Column({
     type: 'enum',
-    enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+    enum: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'],
     default: 'pending',
   })
   status: string;
@@ -25,6 +25,6 @@ export class Order {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @OneToMany(() => OrderItem, item => item.order)
+  @OneToMany(() => OrderItem, item => item.order, { cascade: true })
   items: OrderItem[];
 }
