@@ -1,9 +1,10 @@
 // src/orders/orders.service.ts
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order }     from './order.entity';
 import { OrderItem } from './order-item.entity';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class OrdersService {
@@ -13,9 +14,10 @@ export class OrdersService {
 
     @InjectRepository(OrderItem)
     private itemRepo: Repository<OrderItem>,
+
+    private notificationsService: NotificationsService,
   ) {}
 
-  // ── POST /orders — place a new order ─────────────────────────
   async create(userId: number, total: number, items: { product_id: number; quantity: number; price: number }[]) {
     const order = this.orderRepo.create({
       user:   { user_id: userId } as any,
@@ -34,19 +36,20 @@ export class OrdersService {
     );
     await this.itemRepo.save(orderItems);
 
+    await this.notificationsService.createOrderNotification(
+      userId, savedOrder.order_id, 'confirmed');
+
     return this.findOne(savedOrder.order_id);
   }
 
-  // ── GET /orders — customer: their own orders ──────────────────
   findByUser(userId: number) {
     return this.orderRepo.find({
-      where:   { user: { user_id: userId } },
+      where:     { user: { user_id: userId } },
       relations: ['items', 'items.product', 'items.product.category'],
-      order:   { created_at: 'DESC' },
+      order:     { created_at: 'DESC' },
     });
   }
 
-  // ── GET /orders/all — admin: all orders ───────────────────────
   findAll() {
     return this.orderRepo.find({
       relations: ['user', 'items', 'items.product', 'items.product.category'],
@@ -54,7 +57,6 @@ export class OrdersService {
     });
   }
 
-  // ── GET /orders/:id — single order ───────────────────────────
   async findOne(orderId: number) {
     const order = await this.orderRepo.findOne({
       where:     { order_id: orderId },
@@ -64,11 +66,19 @@ export class OrdersService {
     return order;
   }
 
-  // ── PATCH /orders/:id/status — admin: update status ──────────
   async updateStatus(orderId: number, status: string) {
-    const order = await this.orderRepo.findOne({ where: { order_id: orderId } });
+    const order = await this.orderRepo.findOne({
+      where:     { order_id: orderId },
+      relations: ['user'],
+    });
     if (!order) throw new NotFoundException('Order not found');
     order.status = status;
-    return this.orderRepo.save(order);
+    await this.orderRepo.save(order);
+
+    if (order.user?.user_id) {
+      await this.notificationsService.createOrderNotification(
+        order.user.user_id, orderId, status);
+    }
+    return order;
   }
 }

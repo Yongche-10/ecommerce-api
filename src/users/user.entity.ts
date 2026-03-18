@@ -21,6 +21,9 @@ export class User {
   @Column({ nullable: true })
   phone: string;
 
+  @Column({ name: 'photo_url', nullable: true })
+  photo_url: string;
+
   @Column({ type: 'enum', enum: ['customer', 'admin'], default: 'customer' })
   role: 'customer' | 'admin';
 
