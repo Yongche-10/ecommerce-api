@@ -51,12 +51,10 @@ export class NotificationsService {
     return { success: true };
   }
 
-  // POST /notifications/announce — admin sends to all customers
+  // POST /notifications/announce — admin sends to all customers + stores for admin too
   async announce(title: string, body: string) {
-    const customers = await this.userRepo.find({
-      where: { role: 'customer' },
-    });
-    const notifs = customers.map(user =>
+    const everyone = await this.userRepo.find();
+    const notifs = everyone.map(user =>
       this.notifRepo.create({
         user,
         title,
@@ -66,7 +64,8 @@ export class NotificationsService {
       }),
     );
     await this.notifRepo.save(notifs);
-    return { sent: notifs.length };
+    const customers = everyone.filter(u => u.role === 'customer');
+    return { sent: customers.length };
   }
 
   // Called internally when order status changes
