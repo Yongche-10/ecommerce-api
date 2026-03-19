@@ -18,11 +18,19 @@ export class OrdersService {
     private notificationsService: NotificationsService,
   ) {}
 
-  async create(userId: number, total: number, items: { product_id: number; quantity: number; price: number }[]) {
+  async create(
+    userId: number,
+    total: number,
+    items: { product_id: number; quantity: number; price: number; size?: string; color?: string }[],
+    address?: string,
+    phone?: string,
+  ) {
     const order = this.orderRepo.create({
-      user:   { user_id: userId } as any,
+      user:    { user_id: userId } as any,
       total,
-      status: 'pending',
+      status:  'pending',
+      address: address || '',
+      phone:   phone   || '',
     });
     const savedOrder = await this.orderRepo.save(order);
 
@@ -32,6 +40,8 @@ export class OrdersService {
         product: { product_id: i.product_id }      as any,
         quantity: i.quantity,
         price:    i.price,
+        size:     i.size  || null,
+        color:    i.color || null,
       }),
     );
     await this.itemRepo.save(orderItems);
