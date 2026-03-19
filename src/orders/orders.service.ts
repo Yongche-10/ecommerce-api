@@ -37,7 +37,7 @@ export class OrdersService {
     await this.itemRepo.save(orderItems);
 
     await this.notificationsService.createOrderNotification(
-      userId, savedOrder.order_id, 'confirmed');
+      userId, savedOrder.order_id, 'placed');
 
     return this.findOne(savedOrder.order_id);
   }

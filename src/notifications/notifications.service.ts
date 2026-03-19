@@ -72,6 +72,10 @@ export class NotificationsService {
   // Called internally when order status changes
   async createOrderNotification(userId: number, orderId: number, status: string) {
     const messages: Record<string, { title: string; body: string }> = {
+      placed: {
+        title: 'Order Placed 🛍️',
+        body:  `Your order #${orderId} has been placed successfully. Waiting for confirmation.`,
+      },
       confirmed:  {
         title: 'Order Confirmed ✅',
         body:  `Your order #${orderId} has been confirmed and is being processed.`,
