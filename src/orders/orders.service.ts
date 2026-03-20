@@ -36,15 +36,15 @@ export class OrdersService {
 
     const orderItems = items.map(i =>
       this.itemRepo.create({
-        order:   { order_id: savedOrder.order_id } as any,
-        product: { product_id: i.product_id }      as any,
+        order:    { order_id: savedOrder.order_id } as any,
+        product:  { product_id: i.product_id }      as any,
         quantity: i.quantity,
         price:    i.price,
-        size:     i.size  || null,
-        color:    i.color || null,
-      }),
+        size:     i.size  ?? null,
+        color:    i.color ?? null,
+      } as any),
     );
-    await this.itemRepo.save(orderItems);
+    await this.itemRepo.save(orderItems as any);
 
     await this.notificationsService.createOrderNotification(
       userId, savedOrder.order_id, 'placed');
